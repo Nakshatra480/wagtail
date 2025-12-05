@@ -1,0 +1,12 @@
+{% extends "base_page.html" %}
+{% load wagtailcore_tags %}
+
+{% block page_content %}
+<section>
+    <h2>Welcome to the Mini CMS</h2>
+    <div class="richtext">
+        {{ page.intro|richtext }}
+    </div>
+</section>
+{% endblock %}
+

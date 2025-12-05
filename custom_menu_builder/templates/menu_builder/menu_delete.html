@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Menu - Menu Builder CMS{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>Menu Builder CMS</h1>
+        </div>
+        <nav class="main-navigation">
+            <a href="{% url 'menu_list' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'wagtailadmin_home' %}" class="nav-link">Admin</a>
+            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Delete Menu</h1>
+            <a href="{% url 'menu_list' %}" class="btn btn-secondary">Back to Menus</a>
+        </div>
+
+        <div style="max-width: 600px; margin: 0 auto;">
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 16px; padding: 32px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                <h2 style="font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 16px;">Are you sure?</h2>
+                <p style="color: #cbd5e1; margin-bottom: 24px; line-height: 1.7;">
+                    You are about to delete the menu <strong style="color: #f1f5f9;">"{{ menu.title }}"</strong> ({{ menu.slug }}).
+                    This action cannot be undone and will also delete all menu items associated with this menu.
+                </p>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div style="display: flex; gap: 12px;">
+                        <button type="submit" class="btn btn-danger">Yes, Delete Menu</button>
+                        <a href="{% url 'menu_list' %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <p>&copy; {% now "Y" %} Menu Builder CMS. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+

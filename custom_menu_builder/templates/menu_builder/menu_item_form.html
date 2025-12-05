@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - Menu Builder CMS{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>Menu Builder CMS</h1>
+        </div>
+        <nav class="main-navigation">
+            <a href="{% url 'menu_list' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'wagtailadmin_home' %}" class="nav-link">Admin</a>
+            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">{{ title }}</h1>
+            <a href="{% url 'menu_edit' menu.id %}" class="btn btn-secondary">Back to Menu</a>
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 16px; padding: 32px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                        <div class="form-errors">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="field-errors">{{ form.title.errors }}</div>
+                        {% endif %}
+                        {% if form.title.help_text %}
+                            <small style="color: #94a3b8; font-size: 12px; margin-top: 4px; display: block;">{{ form.title.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.link_url.id_for_label }}">{{ form.link_url.label }}</label>
+                        {{ form.link_url }}
+                        {% if form.link_url.errors %}
+                            <div class="field-errors">{{ form.link_url.errors }}</div>
+                        {% endif %}
+                        {% if form.link_url.help_text %}
+                            <small style="color: #94a3b8; font-size: 12px; margin-top: 4px; display: block;">{{ form.link_url.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.parent.id_for_label }}">{{ form.parent.label }}</label>
+                        {{ form.parent }}
+                        {% if form.parent.errors %}
+                            <div class="field-errors">{{ form.parent.errors }}</div>
+                        {% endif %}
+                        {% if form.parent.help_text %}
+                            <small style="color: #94a3b8; font-size: 12px; margin-top: 4px; display: block;">{{ form.parent.help_text }}</small>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="form-group checkbox-group">
+                        <label class="checkbox-label" for="{{ form.open_in_new_tab.id_for_label }}">
+                            {{ form.open_in_new_tab }}
+                            <span>{{ form.open_in_new_tab.label }}</span>
+                        </label>
+                        {% if form.open_in_new_tab.errors %}
+                            <div class="field-errors">{{ form.open_in_new_tab.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button type="submit" class="btn btn-primary">{{ action }} Menu Item</button>
+                        <a href="{% url 'menu_edit' menu.id %}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <p>&copy; {% now "Y" %} Menu Builder CMS. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
