@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+{% load menu_tags %}
+{% load static %}
+
+{% block title %}Preview: {{ menu.title }} - Menu Builder CMS{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>Menu Builder CMS</h1>
+        </div>
+        <nav class="main-navigation">
+            <a href="{% url 'menu_list' %}" class="nav-link">Dashboard</a>
+            <a href="{% url 'menu_edit' menu.id %}" class="nav-link">Edit Menu</a>
+            <a href="{% url 'wagtailadmin_home' %}" class="nav-link">Admin</a>
+            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Menu Preview: {{ menu.title }}</h1>
+            <div style="display: flex; gap: 12px;">
+                <a href="{% url 'menu_edit' menu.id %}" class="btn btn-primary">Edit Menu</a>
+                <button onclick="window.close()" class="btn btn-secondary">Close Preview</button>
+            </div>
+        </div>
+
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Menu Preview with Drag and Drop -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 16px; padding: 40px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); margin-bottom: 40px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                    <h2 style="font-size: 20px; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin: 0;">Menu Preview</h2>
+                    <p style="color: #94a3b8; font-size: 12px; margin: 0;">Drag items to reorder</p>
+                </div>
+                
+                <!-- Live Menu Preview -->
+                <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 12px; padding: 24px; margin-bottom: 32px;">
+                    <div class="menu-preview-vertical">
+                        {% render_menu menu.slug %}
+                    </div>
+                </div>
+                
+                <!-- Hidden CSRF token for AJAX -->
+                {% csrf_token %}
+
+                <!-- Drag and Drop Menu Items -->
+                {% if menu_items %}
+                <div id="menu-items-container" style="display: grid; gap: 12px;">
+                    {% for item in menu_items %}
+                        <div class="draggable-item" data-item-id="{{ item.id }}" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 12px; padding: 16px; cursor: move; transition: all 0.3s ease; position: relative;">
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <div class="drag-handle" style="color: #94a3b8; font-size: 18px; cursor: grab; user-select: none;">☰</div>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 600; color: #f1f5f9; margin-bottom: 4px;">{{ item.title }}</div>
+                                    <div style="font-size: 12px; color: #94a3b8; font-family: 'Courier New', monospace;">{{ item.get_url }}</div>
+                                </div>
+                                <span style="font-size: 11px; color: #10b981; padding: 4px 8px; background: rgba(16, 185, 129, 0.1); border-radius: 4px;">Root</span>
+                            </div>
+                            {% with children=item.get_children %}
+                                {% if children %}
+                                    <div style="margin-top: 12px; padding-left: 40px; border-left: 2px solid rgba(99, 102, 241, 0.3);">
+                                        {% for child in children %}
+                                            <div style="margin-top: 8px; padding: 8px; background: rgba(15, 23, 42, 0.4); border-radius: 6px;">
+                                                <div style="font-weight: 500; color: #cbd5e1; font-size: 14px;">{{ child.title }}</div>
+                                                <div style="font-size: 11px; color: #94a3b8; font-family: 'Courier New', monospace; margin-top: 2px;">{{ child.get_url }}</div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                    <div style="text-align: center; padding: 40px 20px;">
+                        <p style="color: #94a3b8; font-size: 14px;">No menu items yet. Add items to see the preview.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Menu Details -->
+            <div style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 16px; padding: 32px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);">
+                <h2 style="font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 24px; letter-spacing: -0.5px;">Menu Details</h2>
+                
+                <div style="display: grid; gap: 16px;">
+                    <div>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Menu Title</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #f1f5f9;">{{ menu.title }}</div>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Menu Slug</div>
+                        <div style="font-size: 14px; color: #cbd5e1; font-family: 'Courier New', monospace;">{{ menu.slug }}</div>
+                    </div>
+                    
+                    <div>
+                        <div style="font-size: 12px; color: #94a3b8; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Total Menu Items</div>
+                        <div style="font-size: 18px; font-weight: 600; color: #f1f5f9;">{{ menu.menu_items.count }} item{{ menu.menu_items.count|pluralize }}</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <p>&copy; {% now "Y" %} Menu Builder CMS. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Get CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Drag and Drop functionality using HTML5 Drag and Drop API
+    document.addEventListener('DOMContentLoaded', function() {
+        const container = document.getElementById('menu-items-container');
+        if (!container) return;
+        
+        const items = container.querySelectorAll('.draggable-item');
+        let draggedElement = null;
+        
+        items.forEach(item => {
+            // Make items draggable
+            item.draggable = true;
+            
+            item.addEventListener('dragstart', function(e) {
+                draggedElement = this;
+                this.style.opacity = '0.5';
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/html', this.innerHTML);
+            });
+            
+            item.addEventListener('dragend', function(e) {
+                this.style.opacity = '1';
+                items.forEach(item => {
+                    item.classList.remove('drag-over');
+                });
+            });
+            
+            item.addEventListener('dragover', function(e) {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+                e.dataTransfer.dropEffect = 'move';
+                
+                if (draggedElement && this !== draggedElement) {
+                    const rect = this.getBoundingClientRect();
+                    const midpoint = rect.top + rect.height / 2;
+                    
+                    if (e.clientY < midpoint) {
+                        this.classList.add('drag-over-top');
+                        this.classList.remove('drag-over-bottom');
+                    } else {
+                        this.classList.add('drag-over-bottom');
+                        this.classList.remove('drag-over-top');
+                    }
+                }
+                return false;
+            });
+            
+            item.addEventListener('dragleave', function(e) {
+                this.classList.remove('drag-over-top', 'drag-over-bottom');
+            });
+            
+            item.addEventListener('drop', function(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                }
+                
+                if (draggedElement && this !== draggedElement) {
+                    const rect = this.getBoundingClientRect();
+                    const midpoint = rect.top + rect.height / 2;
+                    
+                    if (e.clientY < midpoint) {
+                        container.insertBefore(draggedElement, this);
+                    } else {
+                        container.insertBefore(draggedElement, this.nextSibling);
+                    }
+                    
+                    // Save new order
+                    saveMenuOrder();
+                }
+                
+                this.classList.remove('drag-over-top', 'drag-over-bottom');
+                return false;
+            });
+        });
+        
+        function saveMenuOrder() {
+            const items = container.querySelectorAll('.draggable-item');
+            const itemIds = Array.from(items).map(item => item.dataset.itemId);
+            
+            // Get CSRF token
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || getCookie('csrftoken');
+            
+            // Send AJAX request to save order
+            fetch('{% url "menu_reorder" menu.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({
+                    'item_ids': itemIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Reload the page to show updated menu
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 300);
+                } else {
+                    console.error('Error saving order:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    });
+</script>
+
+<style>
+    .draggable-item {
+        user-select: none;
+    }
+    
+    .draggable-item:hover {
+        border-color: rgba(99, 102, 241, 0.3) !important;
+        transform: translateX(4px);
+    }
+    
+    .draggable-item.drag-over-top::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #6366f1;
+        border-radius: 2px;
+    }
+    
+    .draggable-item.drag-over-bottom::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: #6366f1;
+        border-radius: 2px;
+    }
+    
+    .drag-handle:active {
+        cursor: grabbing;
+    }
+    
+    /* Vertical menu layout for preview */
+    .menu-preview-vertical .menu-list {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        width: 100%;
+        gap: 8px;
+    }
+    
+    .menu-preview-vertical .menu-item {
+        width: 100%;
+    }
+    
+    .menu-preview-vertical .menu-link {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .menu-preview-vertical .menu-link:hover {
+        background: rgba(99, 102, 241, 0.15);
+    }
+    
+    .menu-preview-vertical .submenu {
+        position: static !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        box-shadow: none !important;
+        background: rgba(15, 23, 42, 0.6) !important;
+        border: none !important;
+        margin-top: 8px;
+        margin-left: 24px;
+        padding-left: 0;
+        width: calc(100% - 24px);
+    }
+    
+    .menu-preview-vertical .submenu-item {
+        margin-bottom: 4px;
+    }
+    
+    .menu-preview-vertical .submenu-link {
+        padding: 8px 16px;
+        border-radius: 6px;
+    }
+    
+    .menu-preview-vertical .menu-item.has-children::after {
+        display: none;
+    }
+</style>
+{% endblock %}
+

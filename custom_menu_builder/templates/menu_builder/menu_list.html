@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Menu Builder CMS{% endblock %}
+
+{% block content %}
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>Menu Builder CMS</h1>
+        </div>
+        <nav class="main-navigation">
+            <a href="{% url 'menu_list' %}" class="nav-link">Dashboard</a>
+            {% if user.is_authenticated %}
+                <a href="{% url 'wagtailadmin_home' %}" class="nav-link">Admin</a>
+                <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="nav-link">Login</a>
+                <a href="{% url 'signup' %}" class="nav-link">Sign Up</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Dashboard</h1>
+            {% if user.is_authenticated %}
+                <a href="{% url 'menu_create' %}" class="btn btn-primary">Create New Menu</a>
+            {% endif %}
+        </div>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message message-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Wagtail Animated Element -->
+        {% if user.is_authenticated %}
+        <div class="wagtail-animation-container" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 16px; padding: 60px 40px; backdrop-filter: blur(20px); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); position: relative; overflow: hidden; min-height: 200px; display: flex; align-items: center; justify-content: center; margin-bottom: 40px;">
+            <div class="wagtail-logo-animation">
+                <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Animated circles representing Wagtail's logo concept -->
+                    <circle class="wagtail-circle-1" cx="90" cy="90" r="40" fill="none" stroke="#43bccd" stroke-width="4" opacity="0.8"/>
+                    <circle class="wagtail-circle-2" cx="90" cy="90" r="55" fill="none" stroke="#007d7e" stroke-width="3" opacity="0.6"/>
+                    <circle class="wagtail-circle-3" cx="90" cy="90" r="70" fill="none" stroke="#6e5494" stroke-width="3" opacity="0.4"/>
+                    <!-- Animated dots -->
+                    <circle class="wagtail-dot-1" cx="90" cy="50" r="6" fill="#43bccd"/>
+                    <circle class="wagtail-dot-2" cx="130" cy="90" r="6" fill="#007d7e"/>
+                    <circle class="wagtail-dot-3" cx="90" cy="130" r="6" fill="#6e5494"/>
+                    <circle class="wagtail-dot-4" cx="50" cy="90" r="6" fill="#43bccd"/>
+                    <!-- Additional decorative dots -->
+                    <circle class="wagtail-dot-5" cx="110" cy="60" r="4" fill="#43bccd" opacity="0.7"/>
+                    <circle class="wagtail-dot-6" cx="70" cy="60" r="4" fill="#007d7e" opacity="0.7"/>
+                    <circle class="wagtail-dot-7" cx="110" cy="120" r="4" fill="#6e5494" opacity="0.7"/>
+                    <circle class="wagtail-dot-8" cx="70" cy="120" r="4" fill="#43bccd" opacity="0.7"/>
+                </svg>
+            </div>
+            <div class="wagtail-particles">
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+                <div class="particle"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Menus Section -->
+        <div style="margin-top: 40px;">
+            <h2 style="font-size: 24px; font-weight: 700; color: #f1f5f9; margin-bottom: 24px; letter-spacing: -0.5px;">Menus</h2>
+        </div>
+
+        {% if menus %}
+            <div class="menu-grid">
+                {% for menu in menus %}
+                    <div class="menu-card">
+                        <h2 class="menu-name">{{ menu.title }}</h2>
+                        <p class="menu-slug">{{ menu.slug }}</p>
+                        
+                        {% if user.is_authenticated %}
+                            <div class="menu-actions">
+                                <a href="{% url 'menu_edit' menu.id %}" class="btn btn-primary btn-sm">Edit Menu</a>
+                                <a href="{% url 'menu_preview' menu.id %}" class="btn btn-secondary btn-sm">Preview</a>
+                                <a href="{% url 'menu_delete' menu.id %}" class="btn btn-danger btn-sm">Delete</a>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="menu-meta">
+                            <span class="status-badge active">Active</span>
+                            <span class="menu-date">{{ menu.menu_items.count }} item{{ menu.menu_items.count|pluralize }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 60px 20px;">
+                <p style="color: #94a3b8; font-size: 16px; font-weight: 400; letter-spacing: 0.3px;">No menus found. Create your first menu to get started.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'menu_create' %}" class="btn btn-primary" style="margin-top: 20px;">Create New Menu</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <p>&copy; {% now "Y" %} Menu Builder CMS. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+

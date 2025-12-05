@@ -1,0 +1,33 @@
+{% load wagtailcore_tags %}
+
+{% if menu_items %}
+<nav class="menu {{ css_class }}">
+    <ul class="menu-list">
+        {% for item in menu_items %}
+            <li class="menu-item {% if item.get_children %}has-children{% endif %} {{ item.css_class }}">
+                <a href="{{ item.get_url }}" 
+                   {% if item.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                   class="menu-link">
+                    {{ item.title }}
+                </a>
+                {% with children=item.get_children %}
+                    {% if children %}
+                        <ul class="submenu">
+                            {% for child in children %}
+                                <li class="submenu-item {{ child.css_class }}">
+                                    <a href="{{ child.get_url }}"
+                                       {% if child.open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+                                       class="submenu-link">
+                                        {{ child.title }}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endwith %}
+            </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+

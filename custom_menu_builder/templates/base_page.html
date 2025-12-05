@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load menu_tags %}
+
+{% block content %}
+<header class="site-header">
+    <div class="header-container">
+        <div class="logo">
+            <h1>Mini CMS</h1>
+        </div>
+        <nav class="main-navigation">
+            {% render_menu 'main-menu' %}
+        </nav>
+    </div>
+</header>
+
+<main class="main-content">
+    <div class="container">
+        {% block page_content %}{% endblock %}
+    </div>
+</main>
+
+<footer class="site-footer">
+    <div class="footer-container">
+        <p>&copy; {% now "Y" %} Mini CMS. All rights reserved.</p>
+    </div>
+</footer>
+{% endblock %}
+
